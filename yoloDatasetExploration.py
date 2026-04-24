@@ -7,9 +7,9 @@ from pathlib import Path
 
 def main():
     numClasses = 4
-    classesNames = ['truck', 'car', 'van', 'bus']
-    classesColors = [(0, 0, 255), (0, 255, 0), (255, 0, 0), (255, 255, 0)]
-    datasetPath = 'D:\\Datasets\\VisDrone2019_MOT_YOLO\\train'
+    classesNames = ['pedestrian', 'car', 'van', 'truck', 'bus']
+    classesColors = [(0, 0, 255), (0, 255, 0), (255, 0, 0), (255, 255, 0), (255, 255, 255)]
+    datasetPath = 'D:\\Datasets\\VisDrone2019_MOT_YOLO\\val'
     # imageHeight, imageWidth = 640, 640
 
     imagesFiles = os.listdir(os.path.join(datasetPath, 'images'))

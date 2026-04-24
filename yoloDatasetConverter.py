@@ -46,7 +46,7 @@ def main():
     for seq in tqdm(sequences):
 
         # Get all the names of all the frames in the current sequence
-        frames = [fr for fr in os.listdir(os.path.join(args.sequencesPath, seq)) if fr.endswith('.jpg')]
+        frames = sorted([fr for fr in os.listdir(os.path.join(args.sequencesPath, seq)) if fr.endswith('.jpg')])
         imageHeight, imageWidth = cv.imread(os.path.join(args.sequencesPath, seq, frames[0])).shape[:2]
         
         # Create an empty list with size the same as the number of images in the current sequence
@@ -76,13 +76,11 @@ def main():
                 h  = int(l[5]) / imageHeight
                 
                 annotationsStrings[int(l[0])-1] += f"{newClassId} {cx} {cy} {w} {h}\n"
-            f.close()
         
         # Write the content of the annotations list to the annotations txt files, one file for each element
         for i, annotation in enumerate(annotationsStrings):
             with open(os.path.join(args.resultsPath, args.split, "labels", f"{seq}_{str(i+1).zfill(7)}.txt"), "w") as f:
                 f.write(annotation)
-            f.close()
 
 
 if __name__ == "__main__":
