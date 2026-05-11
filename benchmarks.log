@@ -1,0 +1,67 @@
+
+Half Precision
+Benchmarks complete for best.pt on data.yaml at imgsz=640 (288.31s)
+Benchmarks legend:  - ✅ Success  - ❎ Export passed but validation failed  - ❌️ Export failed
++-------------------------------------------------------------------------------------------+
+|     Format    Status❔   Size (MB)   metrics/mAP50-95(B)   Inference time (ms/im)   FPS   |
++===========================================================================================+
+| 1   PyTorch   ✅         49.6        0.2352                84.46                    11.84 |
++-------------------------------------------------------------------------------------------+
+
+Benchmarks complete for best.pt on data.yaml at imgsz=640 (423.05s)
+Benchmarks legend:  - ✅ Success  - ❎ Export passed but validation failed  - ❌️ Export failed
++----------------------------------------------------------------------------------------------+
+|     Format        Status❔   Size (MB)   metrics/mAP50-95(B)   Inference time (ms/im)   FPS  |
++==============================================================================================+
+| 1   TorchScript   ✅         49.7        0.0229                130.44                   7.67 |
++----------------------------------------------------------------------------------------------+
+
+Benchmarks complete for best.pt on data.yaml at imgsz=640 (432.93s)
+Benchmarks legend:  - ✅ Success  - ❎ Export passed but validation failed  - ❌️ Export failed
++-----------------------------------------------------------------------------------------+
+|     Format   Status❔   Size (MB)   metrics/mAP50-95(B)   Inference time (ms/im)   FPS  |
++=========================================================================================+
+| 1   ONNX     ✅         49.5        0.0229                134.86                   7.41 |
++-----------------------------------------------------------------------------------------+
+
+Benchmarks complete for best.pt on data.yaml at imgsz=640 (381.19s)
+Benchmarks legend:  - ✅ Success  - ❎ Export passed but validation failed  - ❌️ Export failed
++---------------------------------------------------------------------------------------------+
+|     Format     Status❔   Size (MB)   metrics/mAP50-95(B)   Inference time (ms/im)   FPS    |
++=============================================================================================+
+| 1   TensorRT   ✅         63.7        0.2376                9.95                     100.47 |
++---------------------------------------------------------------------------------------------+
+
+
+Full Precision
+Benchmarks complete for best.pt on data.yaml at imgsz=640 (91.02s)
+Benchmarks legend:  - ✅ Success  - ❎ Export passed but validation failed  - ❌️ Export failed
++-------------------------------------------------------------------------------------------+
+|     Format    Status❔   Size (MB)   metrics/mAP50-95(B)   Inference time (ms/im)   FPS   |
++===========================================================================================+
+| 1   PyTorch   ✅         49.6        0.2359                15.5                     64.51 |
++-------------------------------------------------------------------------------------------+
+
+Benchmarks complete for best.pt on data.yaml at imgsz=640 (113.04s)
+Benchmarks legend:  - ✅ Success  - ❎ Export passed but validation failed  - ❌️ Export failed
++-----------------------------------------------------------------------------------------------+
+|     Format        Status❔   Size (MB)   metrics/mAP50-95(B)   Inference time (ms/im)   FPS   |
++===============================================================================================+
+| 1   TorchScript   ✅         99.1        0.2377                22.23                    44.99 |
++-----------------------------------------------------------------------------------------------+
+
+Benchmarks complete for best.pt on data.yaml at imgsz=640 (123.20s)
+Benchmarks legend:  - ✅ Success  - ❎ Export passed but validation failed  - ❌️ Export failed
++------------------------------------------------------------------------------------------+
+|     Format   Status❔   Size (MB)   metrics/mAP50-95(B)   Inference time (ms/im)   FPS   |
++==========================================================================================+
+| 1   ONNX     ✅         98.8        0.2377                25.83                    38.71 |
++------------------------------------------------------------------------------------------+
+
+Benchmarks complete for best.pt on data.yaml at imgsz=640 (190.77s)
+Benchmarks legend:  - ✅ Success  - ❎ Export passed but validation failed  - ❌️ Export failed
++--------------------------------------------------------------------------------------------+
+|     Format     Status❔   Size (MB)   metrics/mAP50-95(B)   Inference time (ms/im)   FPS   |
++============================================================================================+
+| 1   TensorRT   ✅         142.9       0.2377                18.66                    53.59 |
++--------------------------------------------------------------------------------------------+

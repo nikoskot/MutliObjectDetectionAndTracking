@@ -6,8 +6,8 @@ def main():
     model.train(
         data="data.yaml",
         epochs=50,
-        imgsz=1280,
-        batch=8,
+        imgsz=640,
+        batch=4,
         device=0,
         name='detector_v1',
         amp=False,        # enable on Colab

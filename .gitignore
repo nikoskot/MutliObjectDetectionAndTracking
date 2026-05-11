@@ -1,1 +1,5 @@
-yolov8m.pt
+runs/*
+*.engine
+*.onnx
+*.pt
+*.torchscript

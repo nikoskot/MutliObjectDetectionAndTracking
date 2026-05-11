@@ -1,4 +1,4 @@
-split: train
-sequencesPath: D:\Datasets\VisDrone2019-MOT-train\sequences
-annotationsPath: D:\Datasets\VisDrone2019-MOT-train\annotations
+split: val
+sequencesPath: D:\Datasets\VisDrone2019-MOT-val\sequences
+annotationsPath: D:\Datasets\VisDrone2019-MOT-val\annotations
 resultsPath: D:\Datasets\VisDrone2019_MOT_YOLO

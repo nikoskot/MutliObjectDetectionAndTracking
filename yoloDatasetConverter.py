@@ -8,8 +8,21 @@ import cv2 as cv
 from tqdm import tqdm
 
 
-VISDRONE_CATEGORIES_TO_KEEP = [1, 4, 5, 6, 9]
-CATEGORIES_MAPPING = {1:0, 4:1, 5:2, 6:3, 9:4}
+# VISDRONE_CATEGORIES_TO_KEEP = [1, 4, 5, 6, 9]
+# CATEGORIES_MAPPING = {1:0, 4:1, 5:2, 6:3, 9:4}
+VISDRONE_CATEGORIES_TO_KEEP = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+CATEGORIES_MAPPING = {
+    1: 0,   # pedestrian
+    2: 1,   # people
+    3: 2,   # bicycle
+    4: 3,   # car
+    5: 4,   # van
+    6: 5,   # truck
+    7: 6,   # tricycle
+    8: 7,   # awning-tricycle
+    9: 8,   # bus
+    10: 9,  # motor
+}
 
 
 def getParser():
