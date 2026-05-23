@@ -12,7 +12,7 @@ def main():
     model = YOLO("best.pt")
 
     # Validate the model
-    metrics = model.val(data="data.yaml", imgsz=640, batch=4, device=0, save_json=True)
+    # metrics = model.val(data="data.yaml", imgsz=640, batch=4, device=0, save_json=True)
     # metrics.box.map  # map50-95
     # metrics.box.map50  # map50
     # metrics.box.map75  # map75
@@ -24,6 +24,9 @@ def main():
     # benchmark(model="best.pt", data="data.yaml", imgsz=640, half=False, int8=False, device=0, verbose=True, format="torchscript")
     # benchmark(model="best.pt", data="data.yaml", imgsz=640, half=False, int8=False, device=0, verbose=True, format="onnx")
     # benchmark(model="best.pt", data="data.yaml", imgsz=640, half=False, int8=False, device=0, verbose=True, format="engine")
+    
+    # Export model to TensorRT engine
+    # model.export(format="engine", imgsz=640, half=True, device=0)
 
 if __name__ == "__main__":
     main()
