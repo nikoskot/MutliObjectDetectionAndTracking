@@ -2,6 +2,8 @@ import configargparse
 import cv2 as cv
 import time
 from ultralytics import YOLO
+from tracker.byte_tracker import BYTETracker
+import numpy as np
 
 
 def getParser():
@@ -17,7 +19,7 @@ def main():
     args = parser.parse_args()
     
     # Setup input source
-    videoSource = "D:\\Datasets\\VisDrone2019-MOT-test-dev\\sequences\\uav0000009_03358_v\\%07d.jpg"
+    videoSource = "D:\\Datasets\\VisDrone2019-MOT-test-dev\\sequences\\uav0000120_04775_v\\%07d.jpg"
     # videoSource = "D:\\Downloads\\65495-514501835_tiny.mp4"
     
     cap = cv.VideoCapture(videoSource, cv.CAP_IMAGES)
@@ -32,13 +34,16 @@ def main():
     
     # Setup model
     inferenceModel = YOLO(model="best.engine", task="detect", verbose=True)
+    
+    # Setup tracker
+    tracker = BYTETracker()
         
     totalFrames = 0
     start = time.perf_counter()
     
     while True:
         
-        # Get frames
+        # Get frame
         ret, frame = cap.read()
         if not ret:
             print("Can't receive frame from video source (stream end?). Exiting ...")
@@ -46,19 +51,31 @@ def main():
         totalFrames += 1
         
         cv.imshow("Original input", frame)
+        
+        # Detection
         results = inferenceModel(source=frame, device=0, verbose=False)
-        # res = next(results)
+        # res = next(results).cpu()
         res = results[0].cpu()
-        # print(res.boxes.data)
-
-        # cv.imshow("Annotated results", next(results).plot())
-        # cv.imshow("Annotated results", results[0].plot())
         
+        # Visualize detection results
+        frameCopy = frame.copy()
         for x1, y1, x2, y2, conf, cls in res.boxes.data:
-            cv.rectangle(frame, (int(x1), int(y1)), (int(x2), int(y2)), (0, 255, 0), 1)
-            cv.putText(frame, f"{res.names[int(cls)]} {conf:.2f}", (int(x1), int(y1) - 8), cv.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 1)
-        cv.imshow("Annotated results", frame)
+            cv.rectangle(frameCopy, (int(x1), int(y1)), (int(x2), int(y2)), (0, 255, 0), 1)
+            cv.putText(frameCopy, f"{res.names[int(cls)]} {conf:.2f}", (int(x1), int(y1) - 8), cv.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 1)
+        cv.imshow("Detection results", frameCopy)
         
+        # Tracking
+        detectionsForTracker = np.concatenate((res.boxes.xyxy, res.boxes.conf[:, np.newaxis]), axis=1)
+        onlineTargets = tracker.update(detectionsForTracker, res.orig_shape, res.orig_shape)
+        
+        # Visualize tracking results
+        frameCopy = frame.copy()
+        for t in onlineTargets:
+            tlbr = t.tlbr
+            tid = t.track_id
+            cv.rectangle(frameCopy, (int(tlbr[0]), int(tlbr[1])), (int(tlbr[2]), int(tlbr[3])), (0, 255, 0), 1)
+            cv.putText(frameCopy, f"{tid}", (int(tlbr[0]), int(tlbr[1]) - 8), cv.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 1)
+        cv.imshow("Tracking results", frameCopy)
         
         key = cv.waitKey(1) & 0xFF
         # Quit on 'q'
@@ -70,10 +87,6 @@ def main():
     
     elapsed = time.perf_counter() - start
     print(f"Processed {totalFrames} in {elapsed} seconds | {totalFrames / elapsed} fps average")
-    
-    # for res in allResults:
-    #     for r in res:
-    #         print(r.boxes)
 
 
 if __name__ == "__main__":
