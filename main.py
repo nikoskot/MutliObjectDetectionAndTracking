@@ -54,7 +54,6 @@ def main():
         
         # Detection
         results = inferenceModel(source=frame, device=0, verbose=False)
-        # res = next(results).cpu()
         res = results[0].cpu()
         
         # Visualize detection results
@@ -65,16 +64,19 @@ def main():
         cv.imshow("Detection results", frameCopy)
         
         # Tracking
-        detectionsForTracker = np.concatenate((res.boxes.xyxy, res.boxes.conf[:, np.newaxis]), axis=1)
-        onlineTargets = tracker.update(detectionsForTracker, res.orig_shape, res.orig_shape)
+        scale = min(640 / float(res.orig_shape[0]), 640 / float(res.orig_shape[1]))
+        boxes_model_space = res.boxes.xyxy * scale
+        detectionsForTracker = np.concatenate((boxes_model_space, res.boxes.conf[:, np.newaxis], res.boxes.cls[:, np.newaxis]), axis=1)
+        onlineTargets = tracker.update(detectionsForTracker, res.orig_shape, (640, 640))
         
         # Visualize tracking results
         frameCopy = frame.copy()
         for t in onlineTargets:
             tlbr = t.tlbr
             tid = t.track_id
+            classId = t.class_id
             cv.rectangle(frameCopy, (int(tlbr[0]), int(tlbr[1])), (int(tlbr[2]), int(tlbr[3])), (0, 255, 0), 1)
-            cv.putText(frameCopy, f"{tid}", (int(tlbr[0]), int(tlbr[1]) - 8), cv.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 1)
+            cv.putText(frameCopy, f"{res.names[classId]}_{tid}", (int(tlbr[0]), int(tlbr[1]) - 8), cv.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 1)
         cv.imshow("Tracking results", frameCopy)
         
         key = cv.waitKey(1) & 0xFF
