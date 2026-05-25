@@ -9,7 +9,11 @@ import numpy as np
 def getParser():
     parser = configargparse.ArgParser(default_config_files=["config.yaml"])
     parser.add_argument("--configFile", is_config_file=True, help="Config file path")
-    # parser.add_argument("")
+    parser.add_argument("--videoSource", type=str, help="Path to video file or image sequence")
+    parser.add_argument("--modelPath", type=str, help="Path to YOLO model file .pt or .engine")
+    parser.add_argument("--trackThresh", type=float, default=0.5, help="Tracking confidence threshold")
+    parser.add_argument("--trackBuffer", type=int, default=30, help="Number of frames to keep lost tracks")
+    parser.add_argument("--matchThresh", type=float, default=0.8, help="Matching threshold for tracker")
     
     return parser
 
@@ -19,24 +23,22 @@ def main():
     args = parser.parse_args()
     
     # Setup input source
-    videoSource = "D:\\Datasets\\VisDrone2019-MOT-test-dev\\sequences\\uav0000120_04775_v\\%07d.jpg"
-    # videoSource = "D:\\Downloads\\65495-514501835_tiny.mp4"
-    
-    cap = cv.VideoCapture(videoSource, cv.CAP_IMAGES)
-    # cap = cv.VideoCapture(videoSource, cv.CAP_FFMPEG)
-    # cap = cv.VideoCapture(0)
+    if args.videoSource.endswith(".jpg") or args.videoSource.endswith(".png"):
+        cap = cv.VideoCapture(args.videoSource, cv.CAP_IMAGES)
+    elif args.videoSource.endswith(".mp4") or args.videoSource.endswith(".avi"):
+        cap = cv.VideoCapture(args.videoSource, cv.CAP_ANY)
     
     if not cap.isOpened():
-        print(f"Cannot open video source {videoSource}.")
+        print(f"Cannot open video source {args.videoSource}.")
         return
     else: 
         print("Video source opened.")
     
     # Setup model
-    inferenceModel = YOLO(model="best.engine", task="detect", verbose=True)
+    inferenceModel = YOLO(model=args.modelPath, task="detect", verbose=True)
     
     # Setup tracker
-    tracker = BYTETracker()
+    tracker = BYTETracker(track_thresh=args.trackThresh, track_buffer=args.trackBuffer, match_thresh=args.matchThresh)
         
     totalFrames = 0
     start = time.perf_counter()
@@ -64,10 +66,10 @@ def main():
         cv.imshow("Detection results", frameCopy)
         
         # Tracking
-        scale = min(640 / float(res.orig_shape[0]), 640 / float(res.orig_shape[1]))
+        scale = min(inferenceModel.imgsz / float(res.orig_shape[0]), inferenceModel.imgsz / float(res.orig_shape[1]))
         boxes_model_space = res.boxes.xyxy * scale
         detectionsForTracker = np.concatenate((boxes_model_space, res.boxes.conf[:, np.newaxis], res.boxes.cls[:, np.newaxis]), axis=1)
-        onlineTargets = tracker.update(detectionsForTracker, res.orig_shape, (640, 640))
+        onlineTargets = tracker.update(detectionsForTracker, res.orig_shape, (inferenceModel.imgsz, inferenceModel.imgsz))
         
         # Visualize tracking results
         frameCopy = frame.copy()
