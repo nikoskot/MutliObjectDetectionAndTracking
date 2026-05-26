@@ -66,10 +66,10 @@ def main():
         cv.imshow("Detection results", frameCopy)
         
         # Tracking
-        scale = min(inferenceModel.imgsz / float(res.orig_shape[0]), inferenceModel.imgsz / float(res.orig_shape[1]))
+        scale = min(inferenceModel.predictor.model.metadata['imgsz'][0] / float(res.orig_shape[0]), inferenceModel.predictor.model.metadata['imgsz'][0] / float(res.orig_shape[1]))
         boxes_model_space = res.boxes.xyxy * scale
         detectionsForTracker = np.concatenate((boxes_model_space, res.boxes.conf[:, np.newaxis], res.boxes.cls[:, np.newaxis]), axis=1)
-        onlineTargets = tracker.update(detectionsForTracker, res.orig_shape, (inferenceModel.imgsz, inferenceModel.imgsz))
+        onlineTargets = tracker.update(detectionsForTracker, res.orig_shape, tuple(inferenceModel.predictor.model.metadata['imgsz']))
         
         # Visualize tracking results
         frameCopy = frame.copy()
