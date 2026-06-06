@@ -1,7 +1,7 @@
 path: D:\Datasets\VisDrone2019_MOT_YOLO # dataset root dir
 train: train/images # train images (relative to 'path')
 val: val/images # val images (relative to 'path')
-#test:  # test images (optional)
+test:  test_dev/images
 
 # Classes
 nc: 10

@@ -14,6 +14,7 @@ def getParser():
     parser.add_argument("--trackThresh", type=float, default=0.5, help="Tracking confidence threshold")
     parser.add_argument("--trackBuffer", type=int, default=30, help="Number of frames to keep lost tracks")
     parser.add_argument("--matchThresh", type=float, default=0.8, help="Matching threshold for tracker")
+    parser.add_argument("--modelImageSize", type=int, default=640, help="Image that the image is transformed to before passing through the model.")
     
     return parser
 
@@ -32,7 +33,7 @@ def main():
         print(f"Cannot open video source {args.videoSource}.")
         return
     else: 
-        print("Video source opened.")
+        print(f"Video source {args.videoSource} opened.")
     
     # Setup model
     inferenceModel = YOLO(model=args.modelPath, task="detect", verbose=True)
@@ -52,34 +53,34 @@ def main():
             break
         totalFrames += 1
         
-        cv.imshow("Original input", frame)
+        # cv.imshow("Original input", frame)
         
         # Detection
         results = inferenceModel(source=frame, device=0, verbose=False)
         res = results[0].cpu()
         
         # Visualize detection results
-        frameCopy = frame.copy()
-        for x1, y1, x2, y2, conf, cls in res.boxes.data:
-            cv.rectangle(frameCopy, (int(x1), int(y1)), (int(x2), int(y2)), (0, 255, 0), 1)
-            cv.putText(frameCopy, f"{res.names[int(cls)]} {conf:.2f}", (int(x1), int(y1) - 8), cv.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 1)
-        cv.imshow("Detection results", frameCopy)
+        # frameCopy = frame.copy()
+        # for x1, y1, x2, y2, conf, cls in res.boxes.data:
+        #     cv.rectangle(frameCopy, (int(x1), int(y1)), (int(x2), int(y2)), (0, 255, 0), 1)
+        #     cv.putText(frameCopy, f"{res.names[int(cls)]} {conf:.2f}", (int(x1), int(y1) - 8), cv.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 1)
+        # cv.imshow("Detection results", frameCopy)
         
         # Tracking
-        scale = min(inferenceModel.predictor.model.metadata['imgsz'][0] / float(res.orig_shape[0]), inferenceModel.predictor.model.metadata['imgsz'][0] / float(res.orig_shape[1]))
+        scale = min(args.modelImageSize / float(res.orig_shape[0]), args.modelImageSize / float(res.orig_shape[1]))
         boxes_model_space = res.boxes.xyxy * scale
         detectionsForTracker = np.concatenate((boxes_model_space, res.boxes.conf[:, np.newaxis], res.boxes.cls[:, np.newaxis]), axis=1)
-        onlineTargets = tracker.update(detectionsForTracker, res.orig_shape, tuple(inferenceModel.predictor.model.metadata['imgsz']))
+        onlineTargets = tracker.update(detectionsForTracker, res.orig_shape, (args.modelImageSize, args.modelImageSize))
         
         # Visualize tracking results
-        frameCopy = frame.copy()
+        # frameCopy = frame.copy()
         for t in onlineTargets:
             tlbr = t.tlbr
             tid = t.track_id
             classId = t.class_id
-            cv.rectangle(frameCopy, (int(tlbr[0]), int(tlbr[1])), (int(tlbr[2]), int(tlbr[3])), (0, 255, 0), 1)
-            cv.putText(frameCopy, f"{res.names[classId]}_{tid}", (int(tlbr[0]), int(tlbr[1]) - 8), cv.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 1)
-        cv.imshow("Tracking results", frameCopy)
+            cv.rectangle(frame, (int(tlbr[0]), int(tlbr[1])), (int(tlbr[2]), int(tlbr[3])), (0, 255, 0), 1)
+            cv.putText(frame, f"{res.names[classId]}_{tid}", (int(tlbr[0]), int(tlbr[1]) - 8), cv.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 1)
+        cv.imshow("Tracking results", frame)
         
         key = cv.waitKey(1) & 0xFF
         # Quit on 'q'
