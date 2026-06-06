@@ -28,7 +28,7 @@ CATEGORIES_MAPPING = {
 def getParser():
     parser = configargparse.ArgParser(default_config_files=[".\yoloDatasetConverterConfig.yaml"])
     parser.add("--configFile", is_config_file=True, help="Config file path")
-    parser.add("--split", choices=['train', 'val'], help="The dataset split to convert")
+    parser.add("--split", choices=['train', 'val', 'test_dev'], help="The dataset split to convert")
     parser.add("--sequencesPath", type=lambda p: Path(p).resolve(), help="The path of the folder that contains the sequences")
     parser.add("--annotationsPath", type=lambda p: Path(p).resolve(), help="The path of the folder that contains the annotations")
     parser.add("--resultsPath", type=lambda p: Path(p).resolve(), help="The path of the resulting dataset")
