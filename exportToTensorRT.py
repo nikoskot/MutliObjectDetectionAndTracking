@@ -29,22 +29,11 @@ class VisDroneCalibrator(trt.IInt8EntropyCalibrator2):
     Feeds calibration images through the network so TRT can measure
     the activation ranges needed to set INT8 scale factors per layer.
 
-    IInt8EntropyCalibrator2 is the recommended calibrator type —
-    it uses entropy minimization to find optimal quantization thresholds,
+    IInt8EntropyCalibrator2 uses entropy minimization to find optimal quantization thresholds,
     which works better than the simpler MinMax calibrator for most CV models.
-
-    Other calibrator types for reference:
-      - IInt8MinMaxCalibrator     — uses full min/max range, more conservative
-      - IInt8LegacyCalibrator     — older algorithm, rarely used now
-      - IInt8EntropyCalibrator    — v1 entropy, superseded by v2
     """
 
-    def __init__(self,
-                 imageDir: str,
-                 batchSize: int = 1,
-                 imgsz: int = 640,
-                 cacheFile: str = "calibration.cache",
-                 maxImages: int = 500):
+    def __init__(self, imageDir: str, batchSize: int = 1, imgsz: int = 640, cacheFile: str = "calibration.cache", maxImages: int = 500):
 
         super().__init__()
 
@@ -52,26 +41,21 @@ class VisDroneCalibrator(trt.IInt8EntropyCalibrator2):
         self.imgsz      = imgsz
         self.cacheFile = cacheFile
 
-        # Collect image paths — use a representative subset of your dataset
-        # More images = better calibration, but longer build time
-        # 200–500 images is usually sufficient
+        # Collect image paths. More images = better calibration, but longer build time.
         paths = list(Path(imageDir).glob("*.jpg"))
         random.shuffle(paths)
         self.imagePaths = paths[:maxImages]
         self.index = 0
 
-        # Allocate page-locked host memory and GPU memory for one batch
-        # Page-locked (pinned) memory allows faster H2D transfers via DMA
+        # Allocate page-locked host memory and GPU memory for one batch. Page-locked (pinned) memory allows faster H2D transfers via DMA
         self.batchBytes = batchSize * 3 * imgsz * imgsz * np.dtype(np.float32).itemsize
-        self.deviceInput = cuda.mem_alloc(self.batchBytes)
-        self.hostBuffer  = cuda.pagelocked_empty(
-            batchSize * 3 * imgsz * imgsz, np.float32
-        )
+        self.deviceInput = cuda.mem_alloc(self.batchBytes)  # allocate memory space in GPU VRAM
+        self.hostBuffer  = cuda.pagelocked_empty(batchSize * 3 * imgsz * imgsz, np.float32) # allocate pagelocked memory space in CPU RAM
 
     def get_batch_size(self) -> int:
         return self.batchSize
 
-    def get_batch(self, names):
+    def get_batch(self):
         """
         Called repeatedly by TRT during engine build.
         Must return a list of device pointers (one per input tensor),
@@ -92,23 +76,23 @@ class VisDroneCalibrator(trt.IInt8EntropyCalibrator2):
                 imgPath = self.imagePaths[self.index]
                 self.index += 1
 
-            # Must use IDENTICAL preprocessing to your inference pipeline
-            # Any mismatch here = wrong scale factors = accuracy loss
+            # Must use IDENTICAL preprocessing to the inference pipeline
+            # Any mismatch here means wrong scale factors and accuracy loss
             img = cv.imread(str(imgPath))
             img = self._preprocess(img)
             batchImages.append(img)
 
         batch = np.stack(batchImages, axis=0).astype(np.float32)
 
-        np.copyto(self.hostBuffer, batch.ravel())
-        cuda.memcpy_htod(self.deviceInput, self.hostBuffer)
+        np.copyto(self.hostBuffer, batch.ravel())   # This is a CPU-to-CPU copy. It moves the preprocessed batch (a regular numpy array) into the pinned/pagelocked buffer.
+        cuda.memcpy_htod(self.deviceInput, self.hostBuffer) # This is the actual H2D (Host to Device) transfer. The DMA engine reads from the pinned buffer and writes directly into GPU VRAM.
 
         return [int(self.deviceInput)]
 
     def read_calibration_cache(self):
         """
         If a cache file exists, TRT loads scale factors from it
-        instead of running calibration again. This lets you build
+        instead of running calibration again. This lets us build
         multiple INT8 engines from one calibration run.
         """
         if Path(self.cacheFile).exists():
@@ -118,16 +102,14 @@ class VisDroneCalibrator(trt.IInt8EntropyCalibrator2):
         return None  # no cache — TRT will run full calibration
 
     def write_calibration_cache(self, cache):
-        """Called by TRT after calibration — save for future builds."""
+        """Called by TRT after calibration. Save calibration cache for future builds."""
         with open(self.cacheFile, "wb") as f:
             f.write(cache)
         print(f"Calibration cache saved: {self.cacheFile}")
 
     def _preprocess(self, frame: np.ndarray) -> np.ndarray:
         """
-        Must exactly match your inference pipeline preprocessing.
-        This is the most common INT8 calibration mistake — using
-        different preprocessing here vs at inference time.
+        Must exactly match the inference pipeline preprocessing.
         """
         h, w  = frame.shape[:2]
         scale = self.imgsz / max(h, w)
@@ -153,7 +135,7 @@ class VisDroneCalibrator(trt.IInt8EntropyCalibrator2):
 def build_engine(onnxPath: str, enginePath: str, fp16: bool = True, int8: bool = True, imageDir: str = None, cacheFile: str = "calibration.cache", batchSize: int = 1, imageSize: int = 640):
 
     if int8 and imageDir is None:
-        raise ValueError("image_dir is required for INT8 calibration")
+        raise ValueError("imageDir is required for INT8 calibration")
     
     builder = trt.Builder(TRT_LOGGER)
 
@@ -176,8 +158,7 @@ def build_engine(onnxPath: str, enginePath: str, fp16: bool = True, int8: bool =
         config.set_flag(trt.BuilderFlag.FP16)
         
     elif int8:
-        # INT8 requires both flags — TRT uses FP16 for layers where
-        # INT8 would cause too much accuracy loss (automatic fallback)
+        # INT8 requires both flags. TRT uses FP16 for layers where INT8 would cause too much accuracy loss (automatic fallback)
         config.set_flag(trt.BuilderFlag.INT8)
         config.set_flag(trt.BuilderFlag.FP16)
 
@@ -216,6 +197,7 @@ def main():
     # Build the TensorRT engine and save it
     build_engine(onnxPath=args.onnx, enginePath=outputName, fp16=args.fp16, int8=args.int8, imageDir=args.calibrationImagesDir, cacheFile="int8Calibration.cache", batchSize=args.batchSize, imageSize=args.imageSize)
     
+    # Validate output size
     engine = load_engine(outputName)
     context = engine.create_execution_context()
     # context.set_input_shape("images", (args.batchSize, 3, args.imageSize, args.imageSize))
