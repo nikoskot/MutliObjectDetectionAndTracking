@@ -1,0 +1,65 @@
+(cvpbl) D:\Documents\Repos\ComputerVisionPortfolio\MutliObjectDetectionAndTracking>python yoloEvaluate.py -m yolov8s_visdrone_bs1_int8.engine
+No metadata present.
+Metadata embedded: 234 bytes prepended to yolov8s_visdrone_bs1_int8_copy.engine
+Keys: ['task', 'batch', 'imgsz', 'stride', 'nc', 'names']
+WARNING Unable to automatically guess model task, assuming 'task=detect'. Explicitly define task for your model, i.e. 'task=detect', 'segment', 'classify','pose' or 'obb'.
+Ultralytics 8.4.21  Python-3.10.18 torch-2.10.0+cu126 CUDA:0 (NVIDIA GeForce GTX 1660 SUPER, 6144MiB)
+Loading yolov8s_visdrone_bs1_int8_copy.engine for TensorRT inference...
+[06/11/2026-15:38:47] [TRT] [I] Loaded engine size: 13 MiB
+[06/11/2026-15:38:47] [TRT] [I] [MemUsageChange] TensorRT-managed allocation in IExecutionContext creation: CPU +0, GPU +13, now: CPU 0, GPU 25 (MiB)
+Setting batch=1 input of shape (1, 3, 640, 640)
+val: Fast image access  (ping: 0.10.0 ms, read: 1110.8641.3 MB/s, size: 374.3 KB)
+val: Scanning D:\Datasets\VisDrone2019_MOT_YOLO\val\labels.cache... 2846 images, 0 backgrounds, 0 corrupt: 100% ━━━━━━━━━━━━ 2846/2846  0.0s
+                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95): 100% ━━━━━━━━━━━━ 2846/2846 96.7it/s 29.4s
+                   all       2846     114132     0.0908      0.271      0.114     0.0553
+            pedestrian       2253      32404     0.0477      0.352     0.0763     0.0234
+                people       2352      17908     0.0479      0.243       0.05     0.0138
+               bicycle        982       6022     0.0516       0.42      0.131     0.0449
+                   car       2382      31821      0.313      0.302      0.336      0.191
+                   van       2266       6842      0.123      0.183     0.0991     0.0579
+                 truck        985       1359      0.039      0.156     0.0249     0.0124
+              tricycle       1621       3769     0.0928      0.278     0.0719     0.0357
+       awning-tricycle        687       1718     0.0404      0.204     0.0375     0.0187
+                   bus        184        264     0.0717      0.288      0.211      0.122
+                 motor       1868      12025     0.0812      0.281      0.106     0.0333
+Speed: 1.1ms preprocess, 3.7ms inference, 0.0ms loss, 1.7ms postprocess per image
+Results saved to D:\Documents\Repos\ComputerVisionPortfolio\MutliObjectDetectionAndTracking\runs\detect\val37
++---------------------------------------------------------------------------------------------------------------------+
+|                                                        All AP                                                       |
++-----------------+---------+---------+---------+---------+---------+---------+---------+---------+---------+---------+
+|      Class      |   AP50  |   AP55  |   AP60  |   AP65  |   AP70  |   AP75  |   AP80  |   AP85  |   AP90  |   AP95  |
++-----------------+---------+---------+---------+---------+---------+---------+---------+---------+---------+---------+
+|    pedestrian   | 0.07631 |  0.0587 | 0.04177 | 0.02699 | 0.01526 | 0.00887 | 0.00385 | 0.00171 | 0.00027 |  1e-05  |
+|      people     | 0.05001 | 0.03618 |  0.0236 | 0.01443 | 0.00758 | 0.00381 | 0.00167 | 0.00052 |  9e-05  |   0.0   |
+|     bicycle     | 0.13076 | 0.11039 | 0.08683 | 0.05813 | 0.03396 | 0.01606 | 0.00832 | 0.00405 | 0.00036 |  6e-05  |
+|       car       | 0.33563 |  0.3241 | 0.30957 | 0.28691 | 0.25148 | 0.20062 | 0.12845 | 0.05618 |  0.0139 |  0.001  |
+|       van       |  0.0991 | 0.09656 |  0.0927 | 0.08625 | 0.07505 | 0.05846 | 0.04156 | 0.02202 | 0.00715 | 0.00063 |
+|      truck      |  0.0249 | 0.02379 | 0.02143 | 0.01873 | 0.01574 | 0.01067 | 0.00547 | 0.00244 | 0.00093 |   0.0   |
+|     tricycle    | 0.07193 | 0.06778 | 0.06035 | 0.05216 | 0.04224 | 0.03055 | 0.02016 | 0.01013 | 0.00191 |   0.0   |
+| awning-tricycle | 0.03746 | 0.03438 | 0.03186 |  0.0271 | 0.02153 | 0.01742 | 0.01116 | 0.00497 | 0.00146 |  7e-05  |
+|       bus       | 0.21067 | 0.21067 | 0.20953 |  0.1992 | 0.16861 | 0.12603 | 0.07886 | 0.01711 | 0.00233 |   0.0   |
+|      motor      | 0.10563 | 0.08307 | 0.05945 | 0.03879 | 0.02331 | 0.01224 | 0.00667 | 0.00378 | 0.00042 |  3e-05  |
++-----------------+---------+---------+---------+---------+---------+---------+---------+---------+---------+---------+
++---------------------------+
+|     AP50-95 per Class     |
++-----------------+---------+
+|      Class      | AP50-95 |
++-----------------+---------+
+|    pedestrian   | 0.02337 |
+|      people     | 0.01379 |
+|     bicycle     | 0.04489 |
+|       car       | 0.19078 |
+|       van       | 0.05795 |
+|      truck      | 0.01241 |
+|     tricycle    | 0.03572 |
+| awning-tricycle | 0.01874 |
+|       bus       |  0.1223 |
+|      motor      | 0.03334 |
++-----------------+---------+
+mAP50: 0.11424002075104296
+
+mAP75: 0.048473842284471366
+
+mAP50-95: 0.05532996493973444
+
+Removed yolov8s_visdrone_bs1_int8_copy.engine
