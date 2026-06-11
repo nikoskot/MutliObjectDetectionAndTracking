@@ -15,17 +15,6 @@ def getParser():
     return parser
 
 
-# class YOLOWrapper(torch.nn.Module):
-#     def __init__(self, model):
-#         super().__init__()
-#         self.model = model
-
-#     def forward(self, x):
-#         out = self.model(x)
-#         # Ultralytics returns a tuple; first element is the detection tensor
-#         return out[0] if isinstance(out, (list, tuple)) else out
-
-
 def main():
     
     parser = getParser()

@@ -8,7 +8,7 @@ from pathlib import Path
 import random
 
 
-TRT_LOGGER = trt.Logger(trt.Logger.WARNING)
+TRT_LOGGER = trt.Logger(trt.Logger.INFO)
 
 
 def getParser():
