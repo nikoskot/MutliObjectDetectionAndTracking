@@ -1,4 +1,0 @@
-split: test_dev
-sequencesPath: D:\Datasets\VisDrone2019-MOT-test-dev\sequences
-annotationsPath: D:\Datasets\VisDrone2019-MOT-test-dev\annotations
-resultsPath: D:\Datasets\VisDrone2019_MOT_YOLO
