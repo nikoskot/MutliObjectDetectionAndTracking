@@ -1,10 +1,12 @@
 modelPath:    yolov8s_visdrone_bs1_fp16.engine
 modelImageSize: 640
 
+logs_dir: logs
+
 capturer:
-  source_type: camera # one of images, video, camera
-  images_path: ""
-  video_path: ""
+  source_type: images # one of images, video, camera
+  images_path: D:/Datasets/VisDrone2019-MOT/train/sequences/uav0000013_00000_v/%07d.jpg
+  video_path: D:/Datasets/VisDrone2019-MOT/test/videos/uav0000077_00720.mp4
   camera_index: 0
   camera_frame_width: 1360
   camera_frame_height: 764
