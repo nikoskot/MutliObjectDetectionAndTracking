@@ -3,3 +3,5 @@ runs/*
 *.onnx
 *.pt
 *.torchscript
+logs/
+__pycache__/
