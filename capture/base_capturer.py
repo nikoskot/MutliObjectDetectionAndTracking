@@ -19,8 +19,8 @@ class Capturer(ABC):
         logger, 
         monitor
     ) -> None:
-        self.logger = logger
-        self.monitor = monitor
+        self._logger = logger
+        self._monitor = monitor
         self._index = 0
 
     # For context manager: __enter__ opens, __exit__ releases
@@ -35,17 +35,18 @@ class Capturer(ABC):
         t1 = monitor.now()
         
         if image is None:
-            self.logger.debug("Capturer: Captured None frame")
+            self._logger.debug("Capturer: Captured None frame")
             return None                             # end-of-stream contract
         
-        self.monitor.record("capture", t1 - t0)
+        self._monitor.record("capture", t1 - t0)
         
         frame = Frame(image, self._index, t1)
-        self.logger.debug(f"Capturer: Captured frame with shape={frame.image.shape}, index={frame.index}")
+        self._logger.debug(f"Capturer: Captured frame with shape={frame.image.shape}, index={frame.index}")
         self._index += 1
         return frame
 
-    # def release(self): ...                          # idempotent, calls _release()
+    def release(self):
+        self._release()
 
     # subclass contract
     @abstractmethod
@@ -65,8 +66,8 @@ class Capturer(ABC):
     
     @property
     @abstractmethod
-    def fps(self): ...           # None if unknown
+    def fps(self): ...
     
     @property
     @abstractmethod
-    def total_frames(self): ...  # None for camera
+    def total_frames(self): ...
