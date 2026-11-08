@@ -1,2 +1,11 @@
-modelPath:    yolov8s_visdrone.pt
+modelPath:    yolov8s_visdrone_bs1_fp16.engine
 modelImageSize: 640
+
+capturer:
+  source_type: camera # one of images, video, camera
+  images_path: ""
+  video_path: ""
+  camera_index: 0
+  camera_frame_width: 1360
+  camera_frame_height: 764
+  camera_fps: 30
