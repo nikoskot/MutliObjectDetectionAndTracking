@@ -1,6 +1,7 @@
 import cv2 as cv
 import numpy as np
-from base_capturer import Capturer
+
+from .base_capturer import Capturer
 
 
 class CameraCapturer(Capturer):
@@ -21,7 +22,8 @@ class CameraCapturer(Capturer):
         self._fps = fps
         
         if self._camera_index < 0:
-            raise ValueError(f"CameraCapturer: Invalid camera index received ({self._camera_index})")
+            self._logger.error(f"CameraCapturer: Invalid camera index received ({self._camera_index})")
+            return
         
     def _open(self):
         self._cap = cv.VideoCapture(self._camera_index)
@@ -29,7 +31,8 @@ class CameraCapturer(Capturer):
         self._cap.set(cv.CAP_PROP_FRAME_HEIGHT, self._frame_height)
         self._cap.set(cv.CAP_PROP_FPS, self._fps)
         if not self._cap.isOpened():
-            raise RuntimeError("CameraCapturer: Cannot open camera source")
+            self._logger.error("CameraCapturer: Cannot open camera source")
+            return
         else: 
             self._logger.info(f"CameraCapturer: Capturer initialized with camera_source={self._camera_index}, frame_width={self._cap.get(cv.CAP_PROP_FRAME_WIDTH)}, frame_height={self._cap.get(cv.CAP_PROP_FRAME_HEIGHT)}, fps={self._cap.get(cv.CAP_PROP_FPS)}")
     

@@ -1,6 +1,6 @@
-from camera_capturer import CameraCapturer
-from images_capturer import ImagesCapturer
-from video_capturer import VideoCapturer
+from .camera_capturer import CameraCapturer
+from .images_capturer import ImagesCapturer
+from .video_capturer import VideoCapturer
 
 
 def create_capturer(capturer_config, logger, monitor):
@@ -27,4 +27,4 @@ def create_capturer(capturer_config, logger, monitor):
                 capturer_config["camera_fps"]
             )
     else:
-        raise ValueError(f"Capturer Factory: Unsupported source type {capturer_config["source_type"]}")
+        raise ValueError(f"Capturer Factory: Unsupported source type {capturer_config['source_type']}")

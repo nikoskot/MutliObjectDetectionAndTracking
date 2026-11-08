@@ -1,6 +1,7 @@
 import cv2 as cv
 import numpy as np
-from base_capturer import Capturer
+
+from .base_capturer import Capturer
 
 
 class VideoCapturer(Capturer):
@@ -15,12 +16,14 @@ class VideoCapturer(Capturer):
         self._cap = None
         
         if self._video_source is None or self._video_source == "":
-            raise ValueError(f"VideoCapturer: Invalid video source received ({self._video_source})")
+            self._logger.error(f"VideoCapturer: Invalid video source received ({self._video_source})")
+            return
         
     def _open(self):
         self._cap = cv.VideoCapture(self._video_source, cv.CAP_ANY)
         if not self._cap.isOpened():
-            raise RuntimeError("VideoCapturer: Cannot open video source")
+            self._logger.error("VideoCapturer: Cannot open video source")
+            return
         else: 
             self._logger.info(f"VideoCapturer: Capturer initialized with video_source={self._video_source}")
     

@@ -1,6 +1,7 @@
 import cv2 as cv
 import numpy as np
-from base_capturer import Capturer
+
+from .base_capturer import Capturer
 
 
 class ImagesCapturer(Capturer):
@@ -15,12 +16,14 @@ class ImagesCapturer(Capturer):
         self._cap = None
         
         if self._images_abs_path is None or self._images_abs_path == "":
-            raise ValueError(f"ImagesCapturer: Invalid images absolute path received ({self._images_abs_path})")
+            self._logger.error(f"ImagesCapturer: Invalid images absolute path received ({self._images_abs_path})")
+            return
         
     def _open(self):
         self._cap = cv.VideoCapture(self._images_abs_path, cv.CAP_IMAGES)
         if not self._cap.isOpened():
-            raise RuntimeError("ImagesCapturer: Cannot open images source")
+            self._logger.error("ImagesCapturer: Cannot open images source")
+            return
         else: 
             self._logger.info(f"ImagesCapturer: Capturer initialized with images_source={self._images_abs_path}")
     
