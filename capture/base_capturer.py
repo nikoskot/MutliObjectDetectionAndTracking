@@ -3,7 +3,7 @@ from dataclasses import dataclass
 
 import numpy as np
 
-import monitor
+from monitor import now
 
 
 @dataclass
@@ -13,7 +13,7 @@ class Frame:
     t_capture_ns: int
 
 
-class Capturer(ABC):
+class BaseCapturer(ABC):
     def __init__(
         self, 
         logger, 
@@ -25,14 +25,14 @@ class Capturer(ABC):
 
     # For context manager: __enter__ opens, __exit__ releases
     def __enter__(self): self._open(); return self
-    def __exit__(self, *exc): self.release()
+    def __exit__(self, *exc): self._release()
 
     def read(self) -> Frame | None:
         self._before_read()
         
-        t0 = monitor.now()
+        t0 = now()
         image = self._read_impl()
-        t1 = monitor.now()
+        t1 = now()
         
         if image is None:
             self._logger.debug("Capturer: Captured None frame")
@@ -41,12 +41,9 @@ class Capturer(ABC):
         self._monitor.record("capture", t1 - t0)
         
         frame = Frame(image, self._index, t1)
-        self._logger.debug(f"Capturer: Captured frame with shape={frame.image.shape}, index={frame.index}")
+        self._logger.debug("Capturer: Captured frame with shape=%s, index=%d", frame.image.shape, frame.index)
         self._index += 1
         return frame
-
-    def release(self):
-        self._release()
 
     # subclass contract
     @abstractmethod

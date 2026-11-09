@@ -27,4 +27,4 @@ def create_capturer(capturer_config, logger, monitor):
                 capturer_config["camera_fps"]
             )
     else:
-        raise ValueError(f"Capturer Factory: Unsupported source type {capturer_config['source_type']}")
+        raise ValueError("Capturer Factory: Unsupported source type %s", capturer_config['source_type'])

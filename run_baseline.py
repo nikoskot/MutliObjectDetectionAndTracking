@@ -2,14 +2,14 @@ import argparse
 
 import yaml
 
-from capture.capturer_factory import create_capturer
+from capture import create_capturer
 from logger import Logger
 from monitor import Monitor
 
 
 def getParser():
     parser = argparse.ArgumentParser(description="Argument parser for baseline detection pipeline")
-    parser.add_argument("cfg", type=str, default="config.yaml", help="Config file path")
+    parser.add_argument("cfg", type=str, default="config.yaml", nargs="?", help="Config file path")
     
     return parser
 
@@ -31,8 +31,10 @@ def main():
     
         i = 0
         while i < 1000:
+            monitor.reset_durations()
+            
             frame = capturer.read()
-            if not frame:
+            if frame is None:
                 break
         
             monitor.log_stages_durations()

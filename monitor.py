@@ -10,8 +10,11 @@ class Monitor:
         self._logger = logger
         self._stages_durations = {}
     
+    def reset_durations(self):
+        self._stages_durations = {}
+        
     def record(self, stage_name, duration):
         self._stages_durations[stage_name] = duration
     
     def log_stages_durations(self):
-        self._logger.debug("Monitor: Stages durations " + "".join(f"{name}={dur}" for name, dur in self._stages_durations.items()))
+        self._logger.debug("Monitor: Stages durations " + ", ".join(f"{name}={dur}" for name, dur in self._stages_durations.items()))
