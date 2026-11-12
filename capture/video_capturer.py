@@ -1,10 +1,10 @@
 import cv2 as cv
 import numpy as np
 
-from .base_capturer import Capturer
+from .base_capturer import BaseCapturer
 
 
-class VideoCapturer(Capturer):
+class VideoCapturer(BaseCapturer):
     def __init__(
         self, 
         logger, 
@@ -16,16 +16,16 @@ class VideoCapturer(Capturer):
         self._cap = None
         
         if self._video_source is None or self._video_source == "":
-            self._logger.error(f"VideoCapturer: Invalid video source received ({self._video_source})")
-            return
+            self._logger.error("VideoCapturer: Invalid video source received (%s)", self._video_source)
+            raise FileNotFoundError("VideoCapturer: Invalid video source received (%s)", self._video_source)
         
     def _open(self):
         self._cap = cv.VideoCapture(self._video_source, cv.CAP_ANY)
         if not self._cap.isOpened():
             self._logger.error("VideoCapturer: Cannot open video source")
-            return
+            raise RuntimeError("VideoCapturer: Cannot open video source")
         else: 
-            self._logger.info(f"VideoCapturer: Capturer initialized with video_source={self._video_source}")
+            self._logger.info("VideoCapturer: Capturer initialized with video_source=%s", self._video_source)
     
     def _read_impl(self) -> np.ndarray | None:
         ret, frame = self._cap.read()
@@ -35,7 +35,7 @@ class VideoCapturer(Capturer):
         return frame
     
     def _release(self):
-        self._cap.release()
+        if self._cap is not None: self._cap.release()
 
     @property
     def frame_size(self):
