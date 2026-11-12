@@ -11,3 +11,28 @@ capturer:
   camera_frame_width: 1360
   camera_frame_height: 764
   camera_fps: 30
+
+detector:
+  type: engine # engine or pytorch
+  path: D:/Documents/experiments/mutli_object_detection_and_tracking/train_det_20261017/runs/det_exp_1/weights/best.fp32.engine
+  conf: 0.1
+  iou: 0.7
+  max_det: 300
+  n_warmup: 10
+  preprocess_backend: gpu # gpu or cpu
+  nms_backend: gpu # gpu or cpu
+  imgsz: 640 # for .pt models
+  half: False # for .pt models
+
+class_taxonomy: {
+  0: pedestrian,
+  1: people,
+  2: bicycle,
+  3: car,
+  4: van,
+  5: truck,
+  6: tricycle,
+  7: awning-tricycle,
+  8: bus,
+  9: motor,
+}
