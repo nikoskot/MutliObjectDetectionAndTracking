@@ -32,13 +32,13 @@ class UltralyticsDetector(BaseDetector):
         imgsz: int = 640,
         half: bool = False,
         class_names: dict[int, str] | list[str] | None = None,
-        device: int | str = 0,
+        device_index: int | str = 0,
     ) -> None:
         super().__init__(logger, monitor, conf, iou, max_det)
         self._model_path = Path(model_path)
         self._imgsz = imgsz
         self._half = half
-        self._device = device
+        self._device = device_index
         self._model = None
         self._class_names: dict[int, str] = {}
         self._given_class_names = class_names
