@@ -1,10 +1,7 @@
-modelPath:    yolov8s_visdrone_bs1_fp16.engine
-modelImageSize: 640
-
 logs_dir: logs
 
 capturer:
-  source_type: images # one of images, video, camera
+  source_type: images     # one of images, video, camera
   images_path: D:/Datasets/VisDrone2019-MOT/train/sequences/uav0000013_00000_v/%07d.jpg
   video_path: D:/Datasets/VisDrone2019-MOT/test/videos/uav0000077_00720.mp4
   camera_index: 0
@@ -13,16 +10,16 @@ capturer:
   camera_fps: 30
 
 detector:
-  type: engine # engine or pytorch
+  type: engine            # engine or pytorch
   path: D:/Documents/experiments/mutli_object_detection_and_tracking/train_det_20261017/runs/det_exp_1/weights/best.fp32.engine
   conf: 0.1
   iou: 0.7
   max_det: 300
   n_warmup: 10
-  preprocess_backend: gpu # gpu or cpu
-  nms_backend: gpu # gpu or cpu
-  imgsz: 640 # for .pt models
-  half: False # for .pt models
+  preprocess_backend: gpu # gpu or cpu, for engine models
+  nms_backend: gpu        # gpu or cpu, for engine models
+  imgsz: 640              # for .pt models
+  half: False             # for .pt models
 
 class_taxonomy: {
   0: pedestrian,
