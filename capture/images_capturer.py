@@ -36,6 +36,7 @@ class ImagesCapturer(BaseCapturer):
     
     def _release(self):
         self._cap.release()
+        self._logger.debug("ImagesCapturer: Capturer released")
 
     @property
     def frame_size(self):

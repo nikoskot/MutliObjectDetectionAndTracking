@@ -36,6 +36,7 @@ class VideoCapturer(BaseCapturer):
     
     def _release(self):
         if self._cap is not None: self._cap.release()
+        self._logger.debug("VideoCapturer: Capturer released")
 
     @property
     def frame_size(self):
