@@ -9,6 +9,7 @@ from types import TracebackType
 class _RelativePathFormatter(logging.Formatter):
     def format(self, record: logging.LogRecord) -> str:
         record.relative_path = os.path.relpath(record.pathname, os.getcwd())
+        record.location = f"{record.relative_path}:{record.lineno}"
         return super().format(record)
 
     def formatTime(
@@ -28,10 +29,11 @@ class Logger(logging.Logger):
 
         output_directory = Path(log_directory)
         output_directory.mkdir(parents=True, exist_ok=True)
-        log_file = output_directory / timestamp.strftime("%Y-%m-%d_%H-%M-%S-%f_log.txt")
+        # log_file = output_directory / timestamp.strftime("%Y-%m-%d_%H-%M-%S-%f_log.txt")
+        log_file = output_directory / "multi_object_detection_tracking.txt"
 
         formatter = _RelativePathFormatter(
-            "%(asctime)s | %(levelname)s | %(relative_path)s:%(lineno)d | %(message)s"
+            "%(asctime)s | %(levelname)-8s | %(location)-30s | %(message)s"
         )
 
         console_handler = logging.StreamHandler()
