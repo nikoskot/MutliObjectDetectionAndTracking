@@ -1,7 +1,7 @@
 import time
 
 
-def now() -> int:
+def now() -> float:
     return time.perf_counter()
 
 
