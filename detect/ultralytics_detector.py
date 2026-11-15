@@ -80,7 +80,7 @@ class UltralyticsDetector(BaseDetector):
         return self._class_names
 
     # ---- per-frame work --------------------------------------------------
-    def _detect_impl(self, image: np.ndarray) -> tuple[np.ndarray, dict[str, int]]:
+    def _detect_impl(self, image: np.ndarray) -> tuple[np.ndarray, dict[str, float]]:
         # A numpy image is interpreted by Ultralytics as BGR (OpenCV convention).
         results = self._model.predict(
             source=image,
@@ -94,8 +94,8 @@ class UltralyticsDetector(BaseDetector):
         )
         res = results[0]
 
-        # Ultralytics reports its own per-stage times in ms; convert to ns for the monitor.
-        stages = {name: int(ms * 1e6) for name, ms in res.speed.items()}
+        # Ultralytics reports its own per-stage times in ms
+        stages = {name: ms for name, ms in res.speed.items()}
 
         if res.boxes is None or len(res.boxes) == 0:
             return np.zeros((0, 6), dtype=np.float32), stages

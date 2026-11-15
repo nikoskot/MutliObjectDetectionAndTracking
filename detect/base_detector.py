@@ -75,12 +75,12 @@ class BaseDetector(ABC):
         self._require_loaded()
 
         t0 = now()
-        out, stage_durations_ns = self._detect_impl(frame.image)
+        out, stage_durations_ms = self._detect_impl(frame.image)
         t1 = now()
 
         self._monitor.record("detect", t1 - t0)
-        for name, duration_ns in stage_durations_ns.items():
-            self._monitor.record(name, duration_ns)
+        for name, duration_ms in stage_durations_ms.items():
+            self._monitor.record(name, duration_ms)
 
         detections = Detections(
             boxes=np.ascontiguousarray(out[:, :4], dtype=np.float32),
@@ -104,12 +104,12 @@ class BaseDetector(ABC):
     def _release(self) -> None: ...
 
     @abstractmethod
-    def _detect_impl(self, image: np.ndarray) -> tuple[np.ndarray, dict[str, int]]:
+    def _detect_impl(self, image: np.ndarray) -> tuple[np.ndarray, dict[str, float]]:
         """
         Returns:
             out: (N, 6) float32 array [x1, y1, x2, y2, score, class_id] in original-image
                  pixel coordinates (shape (0, 6) when nothing is detected, never None).
-            stage_durations_ns: e.g. {"preprocess": ..., "inference": ..., "postprocess": ...}
+            stage_durations_ms: e.g. {"preprocess": ..., "inference": ..., "postprocess": ...}
         """
 
     @property

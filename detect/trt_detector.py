@@ -181,7 +181,7 @@ class TRTDetector(BaseDetector):
     # ======================================================================
     # Per-frame work
     # ======================================================================
-    def _detect_impl(self, image: np.ndarray) -> tuple[np.ndarray, dict[str, int]]:
+    def _detect_impl(self, image: np.ndarray) -> tuple[np.ndarray, dict[str, float]]:
         if image.dtype != np.uint8 or image.ndim != 3 or image.shape[2] != 3:
             raise ValueError(f"TRTDetector: expected HxWx3 uint8 BGR image, got {image.shape} {image.dtype}")
         if not image.flags.c_contiguous:
@@ -208,9 +208,9 @@ class TRTDetector(BaseDetector):
 
         ev[3].synchronize()
         stages = {
-            "preprocess": int(ev[0].elapsed_time(ev[1]) * 1e6),    # ms -> ns
-            "inference": int(ev[1].elapsed_time(ev[2]) * 1e6),
-            "postprocess": int(ev[2].elapsed_time(ev[3]) * 1e6),
+            "preprocess": ev[0].elapsed_time(ev[1]),
+            "inference": ev[1].elapsed_time(ev[2]),
+            "postprocess": ev[2].elapsed_time(ev[3]),
         }
         return out, stages
 

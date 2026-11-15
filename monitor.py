@@ -2,7 +2,7 @@ import time
 
 
 def now() -> int:
-    return time.perf_counter_ns()
+    return time.perf_counter()
 
 
 class Monitor:
@@ -17,4 +17,4 @@ class Monitor:
         self._stages_durations[stage_name] = duration
     
     def log_stages_durations(self):
-        self._logger.debug("Monitor: Stages durations " + ", ".join(f"{name}={dur}" for name, dur in self._stages_durations.items()))
+        self._logger.debug("Monitor: Stages durations " + ", ".join(f"{name}={dur:.4f}ms" for name, dur in self._stages_durations.items()))
