@@ -298,17 +298,20 @@ class BYTETracker(object):
 
         return output_stracks
 
-    def track(self, output_results, img_info=None, img_size=None):
+    def track(self, detections, img_info=None, img_size=None):
         
         t0 = now()
-        if output_results is None:
+        if detections is None:
             self._logger.debug("BYTETracker: nothing to track.")
             tracks = [track for track in self.tracked_stracks if track.is_activated]
         else:
+            detections_for_tracker = np.concatenate((detections.boxes, detections.scores[:, np.newaxis], detections.class_ids[:, np.newaxis]), axis=1)
+            
             if not img_info or not img_size:
-                tracks = self.update(output_results, (1, 1), (1, 1))
+                tracks = self.update(detections_for_tracker, (1, 1), (1, 1))
             else:
-                tracks = self.update(output_results, img_info, img_size)
+                tracks = self.update(detections_for_tracker, img_info, img_size)
+                
         t1 = now()   
         self._monitor.record("track", t1 - t0)
         
