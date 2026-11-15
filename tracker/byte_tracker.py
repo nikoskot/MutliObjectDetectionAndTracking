@@ -9,6 +9,7 @@ import torch.nn.functional as F
 from .kalman_filter import KalmanFilter
 from .matching import *
 from .basetrack import BaseTrack, TrackState
+from monitor import now
 
 class STrack(BaseTrack):
     shared_kalman = KalmanFilter()
@@ -144,7 +145,7 @@ class STrack(BaseTrack):
 
 
 class BYTETracker(object):
-    def __init__(self, track_thresh=0.5, track_buffer=30, match_thresh=0.8, frame_rate=30):
+    def __init__(self, track_thresh=0.5, track_buffer=30, match_thresh=0.8, frame_rate=30, logger=None, monitor=None):
         self.tracked_stracks = []  # type: list[STrack]
         self.lost_stracks = []  # type: list[STrack]
         self.removed_stracks = []  # type: list[STrack]
@@ -158,6 +159,9 @@ class BYTETracker(object):
         self.max_time_lost = self.buffer_size
         self.kalman_filter = KalmanFilter()
         self.mot20 = False
+        
+        self._logger = logger
+        self._monitor = monitor
 
     def update(self, output_results, img_info, img_size):
         self.frame_id += 1
@@ -294,6 +298,22 @@ class BYTETracker(object):
 
         return output_stracks
 
+    def track(self, output_results, img_info=None, img_size=None):
+        
+        t0 = now()
+        if output_results is None:
+            self._logger.debug("BYTETracker: nothing to track.")
+            tracks = [track for track in self.tracked_stracks if track.is_activated]
+        else:
+            if not img_info or not img_size:
+                tracks = self.update(output_results, (1, 1), (1, 1))
+            else:
+                tracks = self.update(output_results, img_info, img_size)
+        t1 = now()   
+        self._monitor.record("track", t1 - t0)
+        
+        self._logger.debug("BYTETracker: %d tracked objects", len(tracks))
+        return tracks
 
 def joint_stracks(tlista, tlistb):
     exists = {}
