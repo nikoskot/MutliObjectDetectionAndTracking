@@ -42,8 +42,7 @@ def main():
     
     with create_capturer(capturer_config, logger, monitor) as capturer:
     
-        i = 0
-        while i < 1000:
+        while True:
             monitor.reset_durations()
             
             # Capture frame
@@ -55,8 +54,7 @@ def main():
             detections = detector.detect(frame)
             
             # Track
-            detectionsForTracker = np.concatenate((detections.boxes, detections.scores[:, np.newaxis], detections.class_ids[:, np.newaxis]), axis=1)
-            onlineTargets = tracker.track(detectionsForTracker)
+            tracks = tracker.track(detections)
             
             monitor.log_stages_durations()
     
